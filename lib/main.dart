@@ -181,6 +181,7 @@ class _HomePageState extends State<HomePage> {
         tasks: tasks,
         completedTasks: completedTasks,
         progress: progress,
+        goals: goals,
         onToggle: toggleTask,
       ),
       TasksPage(
@@ -256,6 +257,7 @@ class DashboardPage extends StatelessWidget {
   final List<Task> tasks;
   final int completedTasks;
   final double progress;
+  final List<Goal> goals;
   final Function(int) onToggle;
 
   const DashboardPage({
@@ -263,6 +265,7 @@ class DashboardPage extends StatelessWidget {
     required this.tasks,
     required this.completedTasks,
     required this.progress,
+    required this.goals,
     required this.onToggle,
   });
 
