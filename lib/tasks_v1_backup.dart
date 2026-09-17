@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const LifeManagerApp());
@@ -23,16 +22,6 @@ class LifeManagerApp extends StatelessWidget {
   }
 }
 
-class Task {
-  String title;
-  bool completed;
-
-  Task({
-    required this.title,
-    this.completed = false,
-  });
-}
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -42,70 +31,29 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
-  List<Task> tasks = [];
-  bool isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    loadTasks();
-  }
+  final List<Task> tasks = [];
 
-  Future<void> loadTasks() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedTasks = prefs.getStringList('tasks') ?? [];
-
-    setState(() {
-      tasks = savedTasks.map((item) {
-        final parts = item.split('|');
-
-        return Task(
-          title: parts[0],
-          completed: parts.length > 1 && parts[1] == 'true',
-        );
-      }).toList();
-
-      isLoading = false;
-    });
-  }
-
-  Future<void> saveTasks() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final savedTasks = tasks.map((task) {
-      return '${task.title}|${task.completed}';
-    }).toList();
-
-    await prefs.setStringList('tasks', savedTasks);
-  }
-
-  Future<void> addTask(String title) async {
+  void addTask(String title) {
     setState(() {
       tasks.add(Task(title: title));
     });
-
-    await saveTasks();
   }
 
-  Future<void> toggleTask(int index) async {
+  void toggleTask(int index) {
     setState(() {
       tasks[index].completed = !tasks[index].completed;
     });
-
-    await saveTasks();
   }
 
-  Future<void> deleteTask(int index) async {
+  void deleteTask(int index) {
     setState(() {
       tasks.removeAt(index);
     });
-
-    await saveTasks();
   }
 
-  int get completedTasks {
-    return tasks.where((task) => task.completed).length;
-  }
+  int get completedTasks =>
+      tasks.where((task) => task.completed).length;
 
   double get progress {
     if (tasks.isEmpty) return 0;
@@ -114,14 +62,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
     final pages = [
       DashboardPage(
         tasks: tasks,
@@ -194,6 +134,18 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+// ==================== TASK MODEL ====================
+
+class Task {
+  final String title;
+  bool completed;
+
+  Task({
+    required this.title,
+    this.completed = false,
+  });
 }
 
 // ==================== DASHBOARD ====================
@@ -372,7 +324,7 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-// ==================== TASKS ====================
+// ==================== TASKS PAGE ====================
 
 class TasksPage extends StatelessWidget {
   final List<Task> tasks;
@@ -406,7 +358,9 @@ class TasksPage extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
               child: const Text('إلغاء'),
             ),
             FilledButton(
