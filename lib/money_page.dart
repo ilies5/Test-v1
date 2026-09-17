@@ -210,7 +210,9 @@ class _MoneyPageState extends State<MoneyPage> {
             child: ListTile(
               leading: const Icon(Icons.savings_outlined),
               title: const Text('المتبقي'),
-              trailing: const Text('0 DA'),
+              trailing: Text(
+                '${(monthlyIncome - totalExpenses).toStringAsFixed(0)} DA',
+              ),
             ),
           ),
 
