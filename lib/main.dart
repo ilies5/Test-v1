@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'goals_page.dart';
 
 void main() {
   runApp(const LifeManagerApp());
@@ -43,6 +44,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
   List<Task> tasks = [];
+  List<Goal> goals = [];
   bool isLoading = true;
 
   @override
@@ -67,6 +69,58 @@ class _HomePageState extends State<HomePage> {
 
       isLoading = false;
     });
+  }
+  Future<void> loadGoals() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedGoals = prefs.getStringList("goals") ?? [];
+
+    setState(() {
+      goals = savedGoals.map((item) {
+        final parts = item.split("|");
+
+        return Goal(
+          title: parts[0],
+          progress: parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0,
+        );
+      }).toList();
+    });
+  }
+  Future<void> saveGoals() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final savedGoals = goals.map((goal) {
+      return "${goal.title}|${goal.progress}";
+    }).toList();
+
+    await prefs.setStringList("goals", savedGoals);
+  }
+
+
+  Future<void> addGoal(String title) async {
+    if (title.trim().isEmpty) return;
+
+    setState(() {
+      goals.add(Goal(title: title.trim()));
+    });
+
+    await saveGoals();
+  }
+
+
+  Future<void> updateGoal(int index, int progress) async {
+    setState(() {
+      goals[index].progress = progress.clamp(0, 100);
+    });
+
+    await saveGoals();
+  }
+
+  Future<void> deleteGoal(int index) async {
+    setState(() {
+      goals.removeAt(index);
+    });
+
+    await saveGoals();
   }
 
   Future<void> saveTasks() async {
