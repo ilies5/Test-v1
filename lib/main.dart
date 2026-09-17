@@ -343,6 +343,73 @@ class DashboardPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'تقدم الأهداف',
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '${goals.length}',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      if (goals.isEmpty)
+                        const Text(
+                          'أضف أول هدف لك من صفحة الأهداف',
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      else
+                        Builder(
+                          builder: (context) {
+                            final totalProgress = goals.fold<int>(
+                              0,
+                              (sum, goal) => sum + goal.progress,
+                            );
+                            final averageProgress =
+                                totalProgress / goals.length;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                LinearProgressIndicator(
+                                  value: averageProgress / 100,
+                                  minHeight: 9,
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '${averageProgress.round()}% متوسط إنجاز أهدافك',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
 
             const Text(
               'ملخصك',
