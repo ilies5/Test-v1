@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'goals_page.dart';
+import 'money_page.dart';
 
 void main() {
   runApp(const LifeManagerApp());
@@ -195,11 +196,7 @@ class _HomePageState extends State<HomePage> {
         icon: Icons.flag_outlined,
         description: 'هنا ستكون إدارة أهدافك.',
       ),
-      const SimplePage(
-        title: 'المال',
-        icon: Icons.account_balance_wallet_outlined,
-        description: 'الدخل والمصاريف والرصيد.',
-      ),
+      const MoneyPage(),
       const SimplePage(
         title: 'ملاحظات',
         icon: Icons.notes_outlined,
