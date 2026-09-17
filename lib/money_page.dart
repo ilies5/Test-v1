@@ -1,5 +1,17 @@
-import 'package:flutter/material.dart';
+	import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class Expense {
+  String title;
+  double amount;
+  DateTime date;
+
+  Expense({
+    required this.title,
+    required this.amount,
+    required this.date,
+  });
+}
 
 class MoneyPage extends StatefulWidget {
   const MoneyPage({super.key});
