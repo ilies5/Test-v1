@@ -31,10 +31,21 @@ class _MoneyPageState extends State<MoneyPage> {
     );
   }
 
+  Future<void> saveExpenses() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final savedExpenses = expenses.map((expense) {
+      return '${expense.title}|${expense.amount}|${expense.date.toIso8601String()}';
+    }).toList();
+
+    await prefs.setStringList('expenses', savedExpenses);
+  }
+
   @override
   void initState() {
     super.initState();
     loadIncome();
+    loadExpenses();
   }
 
   Future<void> loadIncome() async {
@@ -42,6 +53,25 @@ class _MoneyPageState extends State<MoneyPage> {
 
     setState(() {
       monthlyIncome = prefs.getDouble('monthly_income') ?? 0;
+    });
+  }
+
+  Future<void> loadExpenses() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedExpenses = prefs.getStringList('expenses') ?? [];
+
+    final loadedExpenses = savedExpenses.map((item) {
+      final parts = item.split('|');
+
+      return Expense(
+        title: parts[0],
+        amount: double.tryParse(parts[1]) ?? 0,
+        date: DateTime.tryParse(parts[2]) ?? DateTime.now(),
+      );
+    }).toList();
+
+    setState(() {
+      expenses = loadedExpenses;
     });
   }
 
@@ -134,7 +164,7 @@ class _MoneyPageState extends State<MoneyPage> {
               child: const Text('إلغاء'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final title = titleController.text.trim();
                 final amount = double.tryParse(amountController.text) ?? 0;
 
@@ -150,6 +180,9 @@ class _MoneyPageState extends State<MoneyPage> {
                   );
                 });
 
+                await saveExpenses();
+
+                if (!context.mounted) return;
                 Navigator.pop(context);
               },
               child: const Text('إضافة'),
