@@ -217,15 +217,31 @@ List<Expense> expenses = [];
 
           const SizedBox(height: 10),
 
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(18),
-              child: Center(
-                child: Text(
-                  'لا توجد مصاريف مسجلة',
-                  style: TextStyle(
-                    color: Colors.grey,
+          if (expenses.isEmpty)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(18),
+                child: Center(
+                  child: Text(
+                    'لا توجد مصاريف مسجلة',
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
                   ),
+                ),
+              ),
+            ),
+
+          ...expenses.map(
+            (expense) => Card(
+              child: ListTile(
+                leading: const Icon(Icons.receipt_long_outlined),
+                title: Text(expense.title),
+                subtitle: Text(
+                  '${expense.date.day}/${expense.date.month}/${expense.date.year}',
+                ),
+                trailing: Text(
+                  '${expense.amount.toStringAsFixed(0)} DA',
                 ),
               ),
             ),
