@@ -91,11 +91,80 @@ List<Expense> expenses = [];
     controller.dispose();
   }
 
+  Future<void> addExpense() async {
+    final titleController = TextEditingController();
+    final amountController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('إضافة مصروف'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  labelText: 'اسم المصروف',
+                ),
+              ),
+              TextField(
+                controller: amountController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'المبلغ',
+                  suffixText: 'DA',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('إلغاء'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final title = titleController.text.trim();
+                final amount = double.tryParse(amountController.text) ?? 0;
+
+                if (title.isEmpty || amount <= 0) return;
+
+                setState(() {
+                  expenses.add(
+                    Expense(
+                      title: title,
+                      amount: amount,
+                      date: DateTime.now(),
+                    ),
+                  );
+                });
+
+                Navigator.pop(context);
+              },
+              child: const Text('إضافة'),
+            ),
+          ],
+        );
+      },
+    );
+
+    titleController.dispose();
+    amountController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('المال'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: addExpense,
+        child: const Icon(Icons.add),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -113,7 +182,10 @@ List<Expense> expenses = [];
             child: ListTile(
               leading: const Icon(Icons.account_balance_wallet_outlined),
               title: const Text('الدخل الشهري'),
-              trailing: const Text('0 DA'),
+              trailing: Text(
+                '${monthlyIncome.toStringAsFixed(0)} DA',
+              ),
+              onTap: editIncome,
             ),
           ),
 
