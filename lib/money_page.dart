@@ -22,6 +22,7 @@ class MoneyPage extends StatefulWidget {
 
 class _MoneyPageState extends State<MoneyPage> {
   double monthlyIncome = 0;
+List<Expense> expenses = [];
 
   @override
   void initState() {
