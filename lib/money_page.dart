@@ -22,7 +22,14 @@ class MoneyPage extends StatefulWidget {
 
 class _MoneyPageState extends State<MoneyPage> {
   double monthlyIncome = 0;
-List<Expense> expenses = [];
+  List<Expense> expenses = [];
+
+  double get totalExpenses {
+    return expenses.fold(
+      0,
+      (sum, expense) => sum + expense.amount,
+    );
+  }
 
   @override
   void initState() {
@@ -193,7 +200,9 @@ List<Expense> expenses = [];
             child: ListTile(
               leading: const Icon(Icons.payments_outlined),
               title: const Text('المصاريف'),
-              trailing: const Text('0 DA'),
+              trailing: Text(
+                '${totalExpenses.toStringAsFixed(0)} DA',
+              ),
             ),
           ),
 
