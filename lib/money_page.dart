@@ -1,7 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MoneyPage extends StatelessWidget {
+class MoneyPage extends StatefulWidget {
   const MoneyPage({super.key});
+
+  @override
+  State<MoneyPage> createState() => _MoneyPageState();
+}
+
+class _MoneyPageState extends State<MoneyPage> {
+  double monthlyIncome = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    loadIncome();
+  }
+
+  Future<void> loadIncome() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      monthlyIncome = prefs.getDouble('monthly_income') ?? 0;
+    });
+  }
+
+  Future<void> editIncome() async {
+    final controller = TextEditingController(
+      text: monthlyIncome.toStringAsFixed(0),
+    );
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('الدخل الشهري'),
+          content: TextField(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
+            ),
+            decoration: const InputDecoration(
+              hintText: 'مثال: 50000',
+              suffixText: 'DA',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('إلغاء'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final value = double.tryParse(controller.text) ?? 0;
+
+                if (value < 0) return;
+
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setDouble('monthly_income', value);
+
+                if (!mounted) return;
+
+                setState(() {
+                  monthlyIncome = value;
+                });
+
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+              },
+              child: const Text('حفظ'),
+            ),
+          ],
+        );
+      },
+    );
+
+    controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
